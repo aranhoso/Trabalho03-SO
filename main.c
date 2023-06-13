@@ -12,7 +12,7 @@ typedef struct pagina {
     int molduraPagina;
 }TPagina;
 
-int gera_valor_aleatorio(int seed, int tam);
+int gera_valor_aleatorio(int tam);
 int busca_pagina(int pag_virtual, TPagina *memoria_virtual);
 void acessa(int pagina_nova, int pagina_antiga, TPagina *memoria_virtual);
 int substitui_pagina(TPagina *memoria_virtual);
@@ -34,7 +34,7 @@ int main() {
     encher(memoria_virtual);
 
     for (int i = 0; i < MV_SIZE - 1; i++) {
-        random = gera_valor_aleatorio(i, 100);
+        random = gera_valor_aleatorio(100);
         pagina_nova = busca_pagina(random, memoria_virtual); // -1 se não encontrou
         pagina_antiga = -1;
 
@@ -47,7 +47,6 @@ int main() {
         printf("Página antiga: %d\n", pagina_antiga);
 
         acessa(random, pagina_antiga, memoria_virtual);
-     
     }
 
     // print the memoria_virtual
@@ -58,8 +57,6 @@ int main() {
         printf("Presente: %d\n", memoria_virtual[i].presente);
         printf("Moldura da página: %d\n", memoria_virtual[i].molduraPagina);
     }
-
-    return 0;
 
     return 0;
 }
@@ -76,8 +73,7 @@ void encher(TPagina *memoria_virtual) {
     }
 }
 
-int gera_valor_aleatorio(int seed, int tam) {
-    srand(seed);
+int gera_valor_aleatorio(int tam) {
     return rand() % tam;
 }
 
@@ -91,22 +87,22 @@ int busca_pagina(int pag_virtual, TPagina *memoria_virtual) {
 int substitui_pagina(TPagina *memoria_virtual) {
     int i;
     for (i = 0; i < MV_SIZE - 1; i++) {
-        if (!memoria_virtual[i].referenciada && !memoria_virtual[i].modificada) {
+        if (memoria_virtual[i].presente && !memoria_virtual[i].referenciada && !memoria_virtual[i].modificada) {
             return i;
         }
     }
     for (i = 0; i < MV_SIZE - 1; i++) {
-        if (!memoria_virtual[i].referenciada && memoria_virtual[i].modificada) {
+        if (memoria_virtual[i].presente && !memoria_virtual[i].referenciada && memoria_virtual[i].modificada) {
             return i;
         }
     }
     for (i = 0; i < MV_SIZE - 1; i++) {
-        if (memoria_virtual[i].referenciada && !memoria_virtual[i].modificada) {
+        if (memoria_virtual[i].presente && memoria_virtual[i].referenciada && !memoria_virtual[i].modificada) {
             return i;
         }
     }
     for (i = 0; i < MV_SIZE - 1; i++) {
-        if (memoria_virtual[i].referenciada && memoria_virtual[i].modificada) {
+        if (memoria_virtual[i].presente && memoria_virtual[i].referenciada && memoria_virtual[i].modificada) {
             return i;
         }
     }

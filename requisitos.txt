@@ -1,0 +1,5 @@
+arrumar a main pra rodar mais de 1 algoritmo
+FIFO, MRU
+config_normal(media, dp, seed) - ter 10 testes pra cada algoritmo
+achar um jeito de calcular o random dentro do código, respeitando o desvio padrão
+rodar testes, plotar gráficos

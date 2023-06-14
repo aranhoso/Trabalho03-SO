@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define MV_SIZE 100
 #define MR_SIZE 50
@@ -10,9 +11,13 @@ typedef struct pagina {
     int referenciada;
     int presente;
     int molduraPagina;
+    int timestamp;
 }TPagina;
 
-int gera_valor_aleatorio(int tam);
+// Esta variável é incrementada cada vez que uma página é carregada na memória.
+int g_timestamp = 0;
+
+int gera_valor_aleatorio(int media, int dp);
 int busca_pagina(int pag_virtual, TPagina *memoria_virtual);
 void acessa(int pagina_nova, int pagina_antiga, TPagina *memoria_virtual);
 int substitui_pagina(TPagina *memoria_virtual);
@@ -33,8 +38,11 @@ int main() {
 
     encher(memoria_virtual);
 
+    int media = 50;
+    int desvio_padrao = 10;
+
     for (int i = 0; i < MV_SIZE - 1; i++) {
-        random = gera_valor_aleatorio(100);
+        random = gera_valor_aleatorio(media, desvio_padrao);
         pagina_nova = busca_pagina(random, memoria_virtual); // -1 se não encontrou
         pagina_antiga = -1;
 
@@ -49,14 +57,14 @@ int main() {
         acessa(random, pagina_antiga, memoria_virtual);
     }
 
-    // print the memoria_virtual
-    for (int i = 0; i < MV_SIZE - 1; i++) {
-        printf("Página %d\n", i);
-        printf("Modificada: %d\n", memoria_virtual[i].modificada);
-        printf("Referenciada: %d\n", memoria_virtual[i].referenciada);
-        printf("Presente: %d\n", memoria_virtual[i].presente);
-        printf("Moldura da página: %d\n", memoria_virtual[i].molduraPagina);
-    }
+    // print memoria_virtual
+    // for (int i = 0; i < MV_SIZE - 1; i++) {
+    //     printf("Página %d\n", i);
+    //     printf("Modificada: %d\n", memoria_virtual[i].modificada);
+    //     printf("Referenciada: %d\n", memoria_virtual[i].referenciada);
+    //     printf("Presente: %d\n", memoria_virtual[i].presente);
+    //     printf("Moldura da página: %d\n", memoria_virtual[i].molduraPagina);
+    // }
 
     return 0;
 }
@@ -73,8 +81,18 @@ void encher(TPagina *memoria_virtual) {
     }
 }
 
-int gera_valor_aleatorio(int tam) {
-    return rand() % tam;
+// Gera um número aleatório seguindo uma distribuição normal padrão (média 0, desvio padrão 1)
+double randn() {
+    const double epsilon = 1e-5;  // pequena constante para evitar log(0)
+    double u1 = ((double) rand() / (RAND_MAX)) + epsilon;
+    double u2 = ((double) rand() / (RAND_MAX)) + epsilon;
+    double normal = sqrt(-2*log(u1))*cos(2*M_PI*u2);
+    return (normal + 1) / 2;  // transforma o intervalo de [-1,1] para [0,1]
+}
+
+int gera_valor_aleatorio(int media, int desvio_padrao) {
+    double valor = randn();
+    return (int) (valor * desvio_padrao + media);
 }
 
 int busca_pagina(int pag_virtual, TPagina *memoria_virtual) {
@@ -83,6 +101,18 @@ int busca_pagina(int pag_virtual, TPagina *memoria_virtual) {
     }
     return -1;
 }
+
+//create a function that replaces a page using FIFO
+int fifo(TPagina *memoria_virtual) {
+    int i, menor = 0;
+    for (i = 0; i < MV_SIZE - 1; i++) {
+        if (memoria_virtual[i].timestamp < memoria_virtual[menor].timestamp) {
+            menor = i;
+        }
+    }
+    return menor;
+}
+
 
 int substitui_pagina(TPagina *memoria_virtual) {
     int i;

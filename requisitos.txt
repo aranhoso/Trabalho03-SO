@@ -1,5 +1,5 @@
-arrumar a main pra rodar mais de 1 algoritmo
+FINALIZAREMOS QUANDO:
 FIFO, MRU
-config_normal(media, dp, seed) - ter 10 testes pra cada algoritmo
-achar um jeito de calcular o random dentro do código, respeitando o desvio padrão
+Arrumar a função encher(), para respeitar aleatoriedade, e mexer na função acessa() também, para modificar os bits de referenciado e modificado de forma aleatória
+Colocar o processador que utilizamos de "referência"
 rodar testes, plotar gráficos

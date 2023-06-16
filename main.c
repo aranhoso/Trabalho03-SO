@@ -23,6 +23,8 @@ int gera_valor_aleatorio(int media, int dp, int seed);
 int busca_pagina(int pag_virtual, TPagina *memoria_virtual);
 void acessa(int pagina_nova, int pagina_antiga, TPagina *memoria_virtual);
 int nur(TPagina *memoria_virtual);
+int fifo(TPagina *memoria_virtual);
+int mru(TPagina *memoria_virtual);
 void encher(TPagina *memoria_virtual);
 int trap(int numAlgoritmo, TPagina *memoria_virtual);
 
@@ -59,19 +61,19 @@ int main() {
                     page_miss++;
                 }
 
-                printf("Página nova: %d\n", pagina_nova);
-                printf("Página antiga: %d\n", pagina_antiga);
+                // printf("Página nova: %d\n", pagina_nova);
+                // printf("Página antiga: %d\n", pagina_antiga);
 
                 acessa(random, pagina_antiga, memoria_virtual);
             }
 
             // print memoria_virtual
             for (int i = 0; i < MV_SIZE - 1; i++) {
-                printf("Página %d\n", i);
-                printf("Modificada: %d\n", memoria_virtual[i].modificada);
-                printf("Referenciada: %d\n", memoria_virtual[i].referenciada);
-                printf("Presente: %d\n", memoria_virtual[i].presente);
-                printf("Moldura da página: %d\n", memoria_virtual[i].molduraPagina);
+                // printf("Página %d\n", i);
+                // printf("Modificada: %d\n", memoria_virtual[i].modificada);
+                // printf("Referenciada: %d\n", memoria_virtual[i].referenciada);
+                // printf("Presente: %d\n", memoria_virtual[i].presente);
+                // printf("Moldura da página: %d\n", memoria_virtual[i].molduraPagina);
             }
 
             printf("Page miss: %d\n", page_miss);
@@ -122,9 +124,9 @@ int trap(int numAlgoritmo, TPagina *memoria_virtual) {
         case 0:
             return nur(memoria_virtual);
         case 1:
-            // acessa(pagina_nova, pagina_antiga, memoria_virtual);
+            return fifo(memoria_virtual);
         case 2:
-            // encher(memoria_virtual);
+            return mru(memoria_virtual);
         default:
             printf("Algoritmo não encontrado\n");
             break;
@@ -204,6 +206,16 @@ int nur(TPagina *memoria_virtual) {
         }
     }
     return -1; // retorna -1 se não há páginas disponíveis para substituição
+}
+
+int mru(TPagina *memoria_virtual) {
+    int i, mais_recente = 0;
+    for (i = 0; i < MV_SIZE - 1; i++) {
+        if (memoria_virtual[i].timestamp > memoria_virtual[mais_recente].timestamp) {
+            mais_recente = i;
+        }
+    }
+    return mais_recente;
 }
 
 void acessa(int pagina_nova, int pagina_antiga, TPagina *memoria_virtual) {
